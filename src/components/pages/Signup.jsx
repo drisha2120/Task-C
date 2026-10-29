@@ -1,8 +1,40 @@
 
+import { useState } from 'react'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { auth } from '../../firebase'
+
 function Signup() {
-  function handleSignup(event) {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  async function handleSignup(event) {
     event.preventDefault()
-    alert('Signup form submitted!')
+    setMessage('')
+    setLoading(true)
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      )
+
+      await updateProfile(userCredential.user, {
+        displayName: name,
+      })
+
+      setMessage('Account created successfully!')
+      setName('')
+      setEmail('')
+      setPassword('')
+    } catch (error) {
+      setMessage(error.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -15,6 +47,8 @@ function Signup() {
           <input
             type="text"
             required
+            value={name}
+            onChange={(event) => setName(event.target.value)}
             placeholder="Enter your name"
             className="w-full rounded-lg border p-3"
           />
@@ -25,6 +59,8 @@ function Signup() {
           <input
             type="email"
             required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
             placeholder="Enter your email"
             className="w-full rounded-lg border p-3"
           />
@@ -35,14 +71,27 @@ function Signup() {
           <input
             type="password"
             required
-            placeholder="Create a password"
+            minLength={6}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="Create a password (at least 6 characters)"
             className="w-full rounded-lg border p-3"
           />
         </div>
 
-        <button className="w-full rounded-lg bg-teal-600 p-3 text-white">
-          Sign Up
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-lg bg-teal-600 p-3 text-white disabled:opacity-50"
+        >
+          {loading ? 'Creating account...' : 'Sign Up'}
         </button>
+
+        {message && (
+          <p role="status" className="break-words text-sm">
+            {message}
+          </p>
+        )}
       </form>
     </main>
   )
