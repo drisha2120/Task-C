@@ -27,8 +27,15 @@ function Navbar() {
           </button>
         </div>
 
-        {/* Login and Post buttons */}
+        {/* Sign Up, Login and Post buttons */}
         <div className="flex items-center gap-3">
+          <Link
+            to="/signup"
+            className="rounded-md border border-teal-600 px-4 py-2 text-teal-600 hover:bg-teal-50"
+          >
+            Sign Up
+          </Link>
+
           <Link
             to="/login"
             className="rounded-md border border-teal-600 px-4 py-2 text-teal-600 hover:bg-teal-50"
